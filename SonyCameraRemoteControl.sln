@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonyCameraRemoteControl.iOS
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{2E8DFD40-D585-486D-B04A-E52C8991C210}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonyCameraRemoteControl.NetFx45", "SonyCameraRemoteControl.NetFx45\SonyCameraRemoteControl.NetFx45.csproj", "{72B50625-C374-4B60-9E35-57FA6E3D4DF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3EF1516E-91BF-49C4-863D-9666452D30D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EF1516E-91BF-49C4-863D-9666452D30D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EF1516E-91BF-49C4-863D-9666452D30D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72B50625-C374-4B60-9E35-57FA6E3D4DF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72B50625-C374-4B60-9E35-57FA6E3D4DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72B50625-C374-4B60-9E35-57FA6E3D4DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72B50625-C374-4B60-9E35-57FA6E3D4DF2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{77A7A873-3804-4E92-BFFF-7DCF9B570166}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{77A7A873-3804-4E92-BFFF-7DCF9B570166}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77A7A873-3804-4E92-BFFF-7DCF9B570166}.Release|Any CPU.ActiveCfg = Release|Any CPU
