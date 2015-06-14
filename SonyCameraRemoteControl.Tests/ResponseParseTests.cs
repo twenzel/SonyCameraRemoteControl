@@ -2,14 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace SonyCameraRemoteControl.Tests
 {
-    [TestClass]
+	[TestFixture ()]
     public class ResponseParseTests
     {
-        [TestMethod]
+		[Test ()]
         public void SimpleString()
         {
             string response = "{\"result\": \"Hello Camera Remote API\", \"error\": null, \"id\": 1}";
@@ -21,7 +21,7 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual("1", result.Id);
         }
 
-        [TestMethod]
+		[Test ()]
         public void SimpleString_2()
         {
             string response = "{\"result\": \"Hello Camera Remote API\", \"id\": 1}";
@@ -33,7 +33,7 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual("1", result.Id);
         }
 
-        [TestMethod]
+		[Test ()]
         public void ErrorResponse()
         {
             string response = "{\"error\": [5, \"Illegal Request\"], \"id\": 1}";
@@ -45,7 +45,7 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual("1", result.Id);
         }
 
-        [TestMethod]
+		[Test ()]
         public void Empty()
         {
             string response = "{\"result\": [], \"id\": 1}";
@@ -58,7 +58,7 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual("1", result.Id);
         }
 
-        [TestMethod]
+		[Test ()]
         public void StringArray()
         {
             string response = "{\"result\": [\"Hello Camera Remote API\"], \"error\": null, \"id\": 1}";
@@ -71,7 +71,7 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual("1", result.Id);
         }
 
-        [TestMethod]
+		[Test ()]
         public void StringArray_2()
         {
             string response = "{\"result\": [\"first\", \"second\"], \"id\": 1}";
@@ -85,7 +85,7 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual("1", result.Id);
         }
 
-        [TestMethod]
+		[Test ()]
         public void Dictionary()
         {
             string response = "{\"id\": 1, \"result\": [{\"frameInfo\": true}]}";
@@ -97,7 +97,7 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual(true, result.Value.ElementAt(0).Value);            
         }
 
-        [TestMethod]
+		[Test ()]
         public void MultipleValues()
         {
             string response = "{\"id\": 1, \"result\": [{\"contShootingMode\": \"Spd Priority Cont.\",\"candidate\": [\"Single\",\"Continuous\",\"Spd Priority Cont.\"]}]}";
