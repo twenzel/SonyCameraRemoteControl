@@ -320,6 +320,89 @@ namespace SonyCameraRemoteControl
         }
 
         /// <summary>
+        /// This API provides a function to zoom.
+        /// </summary>
+        /// <param name="direction">"in" or "out"</param>
+        /// <param name="movement">"start" = Long push, "stop" = stop, "1shot" = short push</param>
+        /// <returns>0 = success</returns>
+        public async Task<StringResult> Zoom(string direction, string movement)
+        {
+            CheckCameraEndpoint();
+
+            var result = await SendRequestAsync(Endpoints["camera"], "actZoom", new string[]{direction, movement});
+
+            return StringResult.Parse(result);
+        }
+
+        /// <summary>
+        /// This API provides a function to zoom.
+        /// </summary>
+        /// <param name="movement">"start" = Long push, "stop" = stop, "1shot" = short push</param>
+        /// <returns>0 = success</returns>
+        public async Task<StringResult> ZoomIn(string movement = "start")
+        {
+            return await Zoom("in", movement);
+        }
+
+        /// <summary>
+        /// This API provides a function to zoom.
+        /// </summary>
+        /// <param name="movement">"start" = Long push, "stop" = stop, "1shot" = short push</param>
+        /// <returns>0 = success</returns>
+        public async Task<StringResult> ZoomInStep(string movement = "1shot")
+        {
+            return await Zoom("in", movement);
+        }
+
+        /// <summary>
+        /// This API provides a function to zoom.
+        /// </summary>
+        /// <param name="movement">"start" = Long push, "stop" = stop, "1shot" = short push</param>
+        /// <returns>0 = success</returns>
+        public async Task<StringResult> ZoomOut(string movement = "start")
+        {
+            return await Zoom("out", movement);
+        }
+
+        /// <summary>
+        /// This API provides a function to zoom.
+        /// </summary>
+        /// <param name="movement">"start" = Long push, "stop" = stop, "1shot" = short push</param>
+        /// <returns>0 = success</returns>
+        public async Task<StringResult> ZoomOutStep(string movement = "1shot")
+        {
+            return await Zoom("out", movement);
+        }
+
+        /// <summary>
+        /// This API provides a function to get event from the server.
+        /// </summary>
+        /// <param name="longPolling">true: Callback when timeout or change point detection. false: Callback immediately.</param>
+        /// <returns>Changed values</returns>
+        public async Task<ValuesResult> GetEvent(bool longPolling)
+        {
+            CheckCameraEndpoint();
+
+            var result = await SendRequestAsync(Endpoints["camera"], "getEvent", longPolling.ToString());
+
+            return ValuesResult.Parse(result);
+        }
+
+        /// <summary>
+        /// This API provides a function to set a value of camera function.
+        /// </summary>
+        /// <param name="camerafunction">Camera function</param>
+        /// <returns>0= success</returns>
+        public async Task<StringResult> SetCameraFunction(string camerafunction)
+        {
+            CheckCameraEndpoint();
+
+            var result = await SendRequestAsync(Endpoints["camera"], "setCameraFunction", camerafunction);
+
+            return StringResult.Parse(result);
+        }
+
+        /// <summary>
         /// Sends a request with empty parameters
         /// </summary>
         /// <param name="url">The service url</param>

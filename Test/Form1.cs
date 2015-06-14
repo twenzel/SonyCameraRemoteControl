@@ -72,9 +72,12 @@ namespace Test
                 _BroadcastListener.StopListeningForNotifications();
                 _BroadcastListener.Dispose();
                 _BroadcastListener = null;
+
+                txtDeviceInfo.Text += "\r\nstopped";
             }
             else
             {
+                txtDeviceInfo.Text = "listen...";
                 _BroadcastListener = new SsdpDeviceLocator();
                 _BroadcastListener.DeviceAvailable += _BroadcastListener_DeviceAvailable;
                 _BroadcastListener.StartListeningForNotifications();
@@ -116,9 +119,20 @@ namespace Test
 
         private async void button5_Click(object sender, EventArgs e)
         {
+            axWindowsMediaPlayer1.URL = "";
             var result = await _device.SetShootMode("still");
 
             showError(result);
+        }
+
+        private async void button6_Click(object sender, EventArgs e)
+        {
+            var result = await _device.TakePicture();
+
+            showError(result);
+
+            if (!result.HasError && result.Value.Length > 0)
+                pictureBox1.LoadAsync(result.Value[0]);
         }
     }
 }
