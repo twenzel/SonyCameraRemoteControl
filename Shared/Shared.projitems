@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)RemoteControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfoShared.cs" />
   </ItemGroup>
 </Project>
