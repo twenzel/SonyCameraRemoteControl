@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonyCameraRemoteControl", "SonyCameraRemoteControl\SonyCameraRemoteControl.csproj", "{071DD866-E811-46E7-B6EE-08A468105977}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{265AA4B8-0B35-470B-875B-19FDEC687905}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonyCameraRemoteControl.Tests", "SonyCameraRemoteControl.Tests\SonyCameraRemoteControl.Tests.csproj", "{FE1589C3-C692-4C44-90F1-BD19C44CDCBC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{071DD866-E811-46E7-B6EE-08A468105977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{071DD866-E811-46E7-B6EE-08A468105977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{071DD866-E811-46E7-B6EE-08A468105977}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{071DD866-E811-46E7-B6EE-08A468105977}.Release|Any CPU.Build.0 = Release|Any CPU
+		{265AA4B8-0B35-470B-875B-19FDEC687905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{265AA4B8-0B35-470B-875B-19FDEC687905}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{265AA4B8-0B35-470B-875B-19FDEC687905}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{265AA4B8-0B35-470B-875B-19FDEC687905}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE1589C3-C692-4C44-90F1-BD19C44CDCBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE1589C3-C692-4C44-90F1-BD19C44CDCBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE1589C3-C692-4C44-90F1-BD19C44CDCBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE1589C3-C692-4C44-90F1-BD19C44CDCBC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
