@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{265AA4B8-0B35-470B-875B-19FDEC687905}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonyCamerRemoteControl.Portable", "SonyCamerRemoteControl.Portable\SonyCamerRemoteControl.Portable.csproj", "{77A7A873-3804-4E92-BFFF-7DCF9B570166}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonyCameraRemoteControl.Portable", "SonyCamerRemoteControl.Portable\SonyCameraRemoteControl.Portable.csproj", "{77A7A873-3804-4E92-BFFF-7DCF9B570166}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonyCameraRemoteControl.Tests", "SonyCameraRemoteControl.Tests\SonyCameraRemoteControl.Tests.csproj", "{CB4E6248-0547-48E2-B203-CB82A28BC09B}"
 EndProject

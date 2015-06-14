@@ -69,9 +69,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SonyCamerRemoteControl.Portable\SonyCamerRemoteControl.Portable.csproj">
+    <ProjectReference Include="..\SonyCamerRemoteControl.Portable\SonyCameraRemoteControl.Portable.csproj">
       <Project>{77A7A873-3804-4E92-BFFF-7DCF9B570166}</Project>
-      <Name>SonyCamerRemoteControl.Portable</Name>
+      <Name>SonyCameraRemoteControl.Portable</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
