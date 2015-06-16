@@ -1,0 +1,18 @@
+﻿<Properties StartupItem="Test/Test.csproj" GitUserInfo="UsingGIT">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench>
+    <Files>
+      <File FileName="Shared/AssemblyInfoShared.cs" Line="4" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/Toni/Git/SonyCamerRemoteControl/SonyCameraRemoteControl.Tests/ResponseParseTests.cs" line="54" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <DisabledProjects>
+    <String>SonyCameraRemoteControl.Tests/SonyCameraRemoteControl.Tests.csproj</String>
+    <String>Test/Test.csproj</String>
+  </DisabledProjects>
+</Properties>
