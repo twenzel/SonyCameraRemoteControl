@@ -13,15 +13,16 @@ namespace SonyCameraRemoteControl
     /// </summary>
     public abstract class ResultBase<T> : ResultBase
     {
-        #region properties       
+        #region properties    
+        [JsonProperty("result")]
         public T Value { get; set; }
         #endregion
 
         #region public methods
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(Error))
-                return String.Format("Error {0}: {1}", ErrorCode, Error);
+            if (!string.IsNullOrEmpty(ErrorText))
+                return String.Format("Error {0}: {1}", ErrorCode, ErrorText);
             else
                 return Value.ToString();
         }
@@ -35,7 +36,7 @@ namespace SonyCameraRemoteControl
         /// <returns></returns>
         public static TResult Parse<TResult>(string response) where TResult: ResultBase, new()
         {
-			return JsonConvert.DeserializeObject<TResult> (response);
+			return JsonConvert.DeserializeObject<TResult> (response, new ResponseConverter<TResult, T>());
         }
         #endregion
     }
@@ -45,14 +46,14 @@ namespace SonyCameraRemoteControl
     /// </summary>
     public abstract class ResultBase
     {
-        #region properties
-        public string Error { get; set; }
+        #region properties        
+        public string ErrorText { get; set; }
         public Int32 ErrorCode { get; set; }
         public string Id { get; set; }
 
         public bool HasError
         {
-            get { return !string.IsNullOrEmpty(Error);}
+            get { return !string.IsNullOrEmpty(ErrorText);}
         }
         #endregion
 
@@ -60,7 +61,7 @@ namespace SonyCameraRemoteControl
         public override string ToString()
         {
             if (HasError)
-                return String.Format("Error {0}: {1}", ErrorCode, Error);
+                return String.Format("Error {0}: {1}", ErrorCode, ErrorText);
             else
                 return base.ToString();
         }

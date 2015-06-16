@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SonyCamerRemoteControl.Portable.Converter;
 
 namespace SonyCameraRemoteControl
 {
@@ -25,12 +27,12 @@ namespace SonyCameraRemoteControl
     ///  }
     ///  </example>
     /// </summary>
-	public class ValuesResult : ResultBase<List<object>>
+    public class ValuesResult : ResultBase<Dictionary<string, object>>
     {
         #region public methods
         public static ValuesResult Parse(string response)
         {
-			return ResultBase<List<object>>.Parse<ValuesResult>(response);
+            return JsonConvert.DeserializeObject<ValuesResult>(response, new MultipleObjectsConverter());
         }
         #endregion
     }

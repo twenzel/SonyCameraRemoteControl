@@ -16,7 +16,7 @@ namespace SonyCameraRemoteControl.Tests
             StringResult result = StringResult.Parse(response);
 
             Assert.AreEqual("Hello Camera Remote API", result.Value);
-            Assert.AreEqual(null, result.Error);
+            Assert.AreEqual(null, result.ErrorText);
             Assert.AreEqual(0, result.ErrorCode);
             Assert.AreEqual("1", result.Id);
         }
@@ -28,7 +28,7 @@ namespace SonyCameraRemoteControl.Tests
             StringResult result = StringResult.Parse(response);
 
             Assert.AreEqual("Hello Camera Remote API", result.Value);
-            Assert.AreEqual(null, result.Error);
+            Assert.AreEqual(null, result.ErrorText);
             Assert.AreEqual(0, result.ErrorCode);
             Assert.AreEqual("1", result.Id);
         }
@@ -40,7 +40,7 @@ namespace SonyCameraRemoteControl.Tests
             StringResult result = StringResult.Parse(response);
 
             Assert.AreEqual(null, result.Value);
-            Assert.AreEqual("Illegal Request", result.Error);
+            Assert.AreEqual("Illegal Request", result.ErrorText);
             Assert.AreEqual(5, result.ErrorCode);
             Assert.AreEqual("1", result.Id);
         }
@@ -53,7 +53,7 @@ namespace SonyCameraRemoteControl.Tests
 
             Assert.AreNotEqual(null, result.Value);
             Assert.AreEqual(0, result.Value.Length);
-            Assert.AreEqual(null, result.Error);
+            Assert.AreEqual(null, result.ErrorText);
             Assert.AreEqual(0, result.ErrorCode);
             Assert.AreEqual("1", result.Id);
         }
@@ -66,7 +66,7 @@ namespace SonyCameraRemoteControl.Tests
 
             Assert.AreEqual(1, result.Value.Length);
             Assert.AreEqual("Hello Camera Remote API", result.Value[0]);
-            Assert.AreEqual(null, result.Error);
+            Assert.AreEqual(null, result.ErrorText);
             Assert.AreEqual(0, result.ErrorCode);
             Assert.AreEqual("1", result.Id);
         }
@@ -80,7 +80,7 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual(2, result.Value.Length);
             Assert.AreEqual("first", result.Value[0]);
             Assert.AreEqual("second", result.Value[1]);
-            Assert.AreEqual(null, result.Error);
+            Assert.AreEqual(null, result.ErrorText);
             Assert.AreEqual(0, result.ErrorCode);
             Assert.AreEqual("1", result.Id);
         }
@@ -97,22 +97,85 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual(true, result.Value.ElementAt(0).Value);            
         }
 
+        [Test()]
+        public void Dictionary_2()
+        {
+            string response = "{\"id\": 1, \"result\": [{\"frameInfo\": true, \"test\": 33}]}";
+            DictResult result = DictResult.Parse(response);
+
+            Assert.AreEqual(2, result.Value.Count);
+
+            Assert.AreEqual("frameInfo", result.Value.ElementAt(0).Key);
+            Assert.AreEqual(true, result.Value.ElementAt(0).Value);
+
+            Assert.AreEqual("test", result.Value.ElementAt(1).Key);
+            Assert.AreEqual(33, result.Value.ElementAt(1).Value);
+        }
+
 		[Test ()]
         public void MultipleValues()
         {
             string response = "{\"id\": 1, \"result\": [{\"contShootingMode\": \"Spd Priority Cont.\",\"candidate\": [\"Single\",\"Continuous\",\"Spd Priority Cont.\"]}]}";
             ValuesResult result = ValuesResult.Parse(response);
 
-            Assert.AreEqual(1, result.Value.Count);
-            IDictionary<string, object> values = result.Value[0] as IDictionary<string, object>;
+            Assert.AreEqual(2, result.Value.Count);
+            assetMultiple(result);
+           
+        }
 
-            Assert.AreEqual(2, values.Count);
+        [Test()]
+        public void MultipleValues_2()
+        {
+            string response = "{\"id\": 1, \"result\": [{\"contShootingMode\": \"Spd Priority Cont.\",\"candidate\": [\"Single\",\"Continuous\",\"Spd Priority Cont.\"], \"testMode\": \"still\"}]}";
+            ValuesResult result = ValuesResult.Parse(response);
 
-            Assert.AreEqual("contShootingMode", values.ElementAt(0).Key);
-            Assert.AreEqual("Spd Priority Cont.", values.ElementAt(0).Value);
-            Assert.AreEqual("candidate", values.ElementAt(1).Key);
-            Assert.AreEqual(typeof(ArrayList), values.ElementAt(1).Value.GetType());
-            Assert.AreEqual(null, result.Error);
+            Assert.AreEqual(3, result.Value.Count);
+
+            assetMultiple(result);
+            Assert.AreEqual("testMode", result.Value.ElementAt(2).Key);
+            Assert.AreEqual("still", result.Value.ElementAt(2).Value);
+
+            List<object> innerList = (List<object>)result.Value.ElementAt(1).Value;
+            Assert.AreEqual(3, innerList.Count);
+            Assert.AreEqual("Single", innerList[0]);
+            Assert.AreEqual("Continuous", innerList[1]);
+            Assert.AreEqual("Spd Priority Cont.", innerList[2]);
+        }
+
+
+        [Test()]
+        public void MultipleValues_3()
+        {
+            string response = "{\"id\": 1, \"result\": [{\"contShootingMode\": \"Spd Priority Cont.\",\"candidate\": [\"Single\",{\"key1\": \"val1\", \"key2\": false},\"Spd Priority Cont.\"], \"testMode\": \"still\"}]}";
+            ValuesResult result = ValuesResult.Parse(response);
+
+            Assert.AreEqual(3, result.Value.Count);
+
+            assetMultiple(result);
+            Assert.AreEqual("testMode", result.Value.ElementAt(2).Key);
+            Assert.AreEqual("still", result.Value.ElementAt(2).Value);
+
+            List<object> innerList = (List<object>)result.Value.ElementAt(1).Value;
+            Assert.AreEqual(3, innerList.Count);
+            Assert.AreEqual("Single", innerList[0]);
+            Assert.AreEqual(typeof(Dictionary<string, object>), innerList[1].GetType());
+            Assert.AreEqual("Spd Priority Cont.", innerList[2]);
+
+            Dictionary<string, object> innerdict = (Dictionary<string, object>)innerList[1];
+            Assert.AreEqual("key1", innerdict.ElementAt(0).Key);
+            Assert.AreEqual("val1", innerdict.ElementAt(0).Value);
+
+            Assert.AreEqual("key2", innerdict.ElementAt(1).Key);
+            Assert.AreEqual(false, innerdict.ElementAt(1).Value);
+        }
+
+        private void assetMultiple(ValuesResult result)
+        {
+            Assert.AreEqual("contShootingMode", result.Value.ElementAt(0).Key);
+            Assert.AreEqual("Spd Priority Cont.", result.Value.ElementAt(0).Value);
+            Assert.AreEqual("candidate", result.Value.ElementAt(1).Key);
+            Assert.AreEqual(typeof(List<object>), result.Value.ElementAt(1).Value.GetType());
+            Assert.AreEqual(null, result.ErrorText);
             Assert.AreEqual(0, result.ErrorCode);
             Assert.AreEqual("1", result.Id);
         }
