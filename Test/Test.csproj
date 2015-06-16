@@ -122,6 +122,16 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SonyCameraRemoteControl.NetFx45\SonyCameraRemoteControl.NetFx45.csproj">
+      <Project>{72b50625-c374-4b60-9e35-57fa6e3d4df2}</Project>
+      <Name>SonyCameraRemoteControl.NetFx45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SonyCameraRemoteControl.Portable\SonyCameraRemoteControl.Portable.csproj">
+      <Project>{77a7a873-3804-4e92-bfff-7dcf9b570166}</Project>
+      <Name>SonyCameraRemoteControl.Portable</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">

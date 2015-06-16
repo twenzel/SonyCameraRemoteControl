@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -66,8 +66,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SonyCamerRemoteControl.Portable\SonyCameraRemoteControl.Portable.csproj">
-      <Project>{77A7A873-3804-4E92-BFFF-7DCF9B570166}</Project>
+    <ProjectReference Include="..\SonyCameraRemoteControl.Portable\SonyCameraRemoteControl.Portable.csproj">
+      <Project>{77a7a873-3804-4e92-bfff-7dcf9b570166}</Project>
       <Name>SonyCameraRemoteControl.Portable</Name>
     </ProjectReference>
   </ItemGroup>
