@@ -64,12 +64,12 @@
   <Import Project="..\Shared\Shared.projitems" Label="Shared" Condition="Exists('..\Shared\Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\SonyCamerRemoteControl.Portable\SonyCameraRemoteControl.Portable.csproj">
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SonyCameraRemoteControl.Portable\SonyCameraRemoteControl.Portable.csproj">
       <Project>{77A7A873-3804-4E92-BFFF-7DCF9B570166}</Project>
       <Name>SonyCameraRemoteControl.Portable</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>
