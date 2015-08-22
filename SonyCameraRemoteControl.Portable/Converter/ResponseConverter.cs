@@ -13,7 +13,8 @@ namespace SonyCameraRemoteControl.Converter
     /// <summary>
     /// Converter class for exting json serializer functionality
     /// </summary>
-    public class ResponseConverter<TResult, TValue> : JsonConverter where TResult : ResultBase, new()
+    public class ResponseConverter<TResult, TValue> : JsonConverter 
+		where TResult : ResultBase, new()
     {            
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -36,7 +37,20 @@ namespace SonyCameraRemoteControl.Converter
 
         protected virtual void DeserializeValue(TResult result, JObject jsonObject, JsonSerializer serializer)
         {
-            serializer.Populate(jsonObject.CreateReader(), result);
+			//serializer.Populate(jsonObject.CreateReader(), result);
+			result.Id = (string)jsonObject["id"];
+
+			ResultBase<TValue> valueObject = result as ResultBase<TValue>;
+
+			if (valueObject != null && jsonObject["result"] != null)
+			{
+				List<TValue> results = new List<TValue> ();
+
+				serializer.Populate(jsonObject["result"].CreateReader(), results);
+
+				if (results.Count > 0)
+					valueObject.Value = results[0];
+			}
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

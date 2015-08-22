@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Rssdp;
 using Rssdp.Infrastructure;
+using System.Net.Http.Headers;
 
 namespace SonyCameraRemoteControl
 {
@@ -19,6 +20,7 @@ namespace SonyCameraRemoteControl
         private const string sony_ns = "{urn:schemas-sony-com:av}";
         private const string upnp_ns = "{urn:schemas-upnp-org:device-1-0}";
         private static HttpClient s_DefaultHttpClient;
+		private static int _id;
 
         private string _Udn;
 
@@ -57,13 +59,27 @@ namespace SonyCameraRemoteControl
             return new SonyCameraDevice(discoveredDevice.DescriptionLocation, System.Text.UTF8Encoding.UTF8.GetString(data, 0, data.Length));
         }
 
+		/// <summary>
+		/// Gets the camera endpoint.
+		/// </summary>
+		/// <returns>The camera endpoint.</returns>
+		public string GetCameraEndpoint()
+		{
+			var result = Endpoints ["camera"];
+
+			if (!String.IsNullOrEmpty (FriendlyName) && FriendlyName.StartsWith ("DSC"))
+				result = result.Replace ("/sony/", "/");
+
+			return result;
+		}
+
         /// <summary>
         /// Sends a little hello
         /// </summary>
         /// <returns></returns>
         public async Task<StringResult> HelloAsync()
         {
-            var result = await SendRequestAsync(Endpoints["camera"], "echo", "Hello camera");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "echo", "Hello camera");
 
             return StringResult.Parse(result);
         }
@@ -76,7 +92,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getAvailableApiList");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getAvailableApiList");
 
             return StringsResult.Parse(result);
         }
@@ -89,7 +105,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getApplicationInfo");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getApplicationInfo");
 
             return StringsResult.Parse(result);
         }
@@ -102,7 +118,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getShootMode");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getShootMode");
 
             return StringResult.Parse(result);
         }
@@ -116,7 +132,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getSupportedShootMode");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getSupportedShootMode");
 
             return StringsResult.Parse(result);
         }
@@ -130,7 +146,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getAvailableShootMode");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getAvailableShootMode");
 
             return ValuesResult.Parse(result);
         }
@@ -139,13 +155,13 @@ namespace SonyCameraRemoteControl
         /// Set a value of shooting mode.
         /// </summary>
         /// <returns></returns>
-        public async Task<StringResult> SetShootMode(string mode)
+		public async Task<NoResult> SetShootMode(string mode)
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "setShootMode", mode);
+			var result = await SendRequestAsync(GetCameraEndpoint(), "setShootMode", mode);
 
-            return StringResult.Parse(result);
+			return NoResult.Parse(result);
         }
 
         /// <summary>
@@ -158,7 +174,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "startRecMode");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "startRecMode");
 
             return StringResult.Parse(result);
         }
@@ -171,7 +187,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "stopRecMode");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "stopRecMode");
 
             return StringResult.Parse(result);
         }
@@ -184,7 +200,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "startLiveview");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "startLiveview");
 
             return StringResult.Parse(result);
         }
@@ -198,7 +214,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "startLiveviewWithSize", size);
+			var result = await SendRequestAsync(GetCameraEndpoint(), "startLiveviewWithSize", size);
 
             return StringResult.Parse(result);
         }
@@ -211,7 +227,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "stopLiveview");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "stopLiveview");
 
             return StringResult.Parse(result);
         }
@@ -224,7 +240,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getLiveviewSize");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getLiveviewSize");
 
             return StringResult.Parse(result);
         }
@@ -238,7 +254,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getSupportedLiveviewSize");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getSupportedLiveviewSize");
 
             return StringsResult.Parse(result);
         }
@@ -252,7 +268,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getAvailableLiveviewSize");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getAvailableLiveviewSize");
 
             return ValuesResult.Parse(result);
         }
@@ -267,7 +283,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "setLiveviewFrameInfo", new KeyValuePair<string, object>("frameInfo", frameInfo));
+			var result = await SendRequestAsync(GetCameraEndpoint(), "setLiveviewFrameInfo", new KeyValuePair<string, object>("frameInfo", frameInfo));
 
             return StringResult.Parse(result);
         }
@@ -280,7 +296,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getLiveviewFrameInfo");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getLiveviewFrameInfo");
 
             return DictResult.Parse(result);
         }
@@ -292,13 +308,13 @@ namespace SonyCameraRemoteControl
         /// The postview is captured image data by camera. The postview
         /// image can be used for storing it as the taken picture, and
         /// showing it to the client display.</returns>
-        public async Task<StringsResult> TakePicture()
+		public async Task<StringsResult> TakePicture()
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "actTakePicture");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "actTakePicture");
 
-            return StringsResult.Parse(result);
+			return StringsResult.Parse(result);
         }
 
         /// <summary>
@@ -312,7 +328,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "awaitTakePicture");
+			var result = await SendRequestAsync(GetCameraEndpoint(), "awaitTakePicture");
 
             return StringsResult.Parse(result);
         }
@@ -327,7 +343,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "actZoom", new string[]{direction, movement});
+			var result = await SendRequestAsync(GetCameraEndpoint(), "actZoom", new string[]{direction, movement});
 
             return StringResult.Parse(result);
         }
@@ -381,7 +397,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "getEvent", longPolling.ToString());
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getEvent", longPolling.ToString());
 
             return ValuesResult.Parse(result);
         }
@@ -395,7 +411,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-            var result = await SendRequestAsync(Endpoints["camera"], "setCameraFunction", camerafunction);
+			var result = await SendRequestAsync(GetCameraEndpoint(), "setCameraFunction", camerafunction);
 
             return StringResult.Parse(result);
         }
@@ -589,7 +605,7 @@ namespace SonyCameraRemoteControl
             return s_DefaultHttpClient;
         }        
 
-        private static StringContent CreateContent(string method, string[] parameters, int id = 1, string version="1.0")
+        private static StringContent CreateContent(string method, string[] parameters, string version="1.0")
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("{");
@@ -606,12 +622,14 @@ namespace SonyCameraRemoteControl
 	        }                
 
             sb.AppendLine(string.Format("\"params\": [{0}],", parameterValues));
-            sb.AppendLine(string.Format("\"id\":{0}, \"version\": \"{1}\"}}", id, version));
+			sb.AppendLine(string.Format("\"id\":{0}, \"version\": \"{1}\"}}", getId(), version));
 
-            return new System.Net.Http.StringContent(sb.ToString());
+			var content = new System.Net.Http.StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+			//content.Headers.ContentType = MediaTypeHeaderValue.Parse();
+			return content;
         }
 
-        private static StringContent CreateContent(string method, IEnumerable<KeyValuePair<string, object>> parameters, int id = 1, string version = "1.0")
+        private static StringContent CreateContent(string method, IEnumerable<KeyValuePair<string, object>> parameters, string version = "1.0")
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("{");
@@ -628,10 +646,23 @@ namespace SonyCameraRemoteControl
             }
 
             sb.AppendLine(string.Format("\"params\": [{{{0}}}],", parameterValues));
-            sb.AppendLine(string.Format("\"id\":{0}, \"version\": \"{1}\"}}", id, version));
+			sb.AppendLine(string.Format("\"id\":{0}, \"version\": \"{1}\"}}", getId(), version));
 
-            return new System.Net.Http.StringContent(sb.ToString());
+			var content = new System.Net.Http.StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+			//content.Headers.Add ("Content-Type", "application/json");
+
+			return content;
         }
+
+		/// <summary>
+		/// Gets the identifier.
+		/// </summary>
+		/// <returns>The identifier.</returns>
+		private static int getId()
+		{
+			_id++;
+			return _id;
+		}
         #endregion
 
         #region properties

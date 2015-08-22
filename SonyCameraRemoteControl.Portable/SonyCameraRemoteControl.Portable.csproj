@@ -6,7 +6,7 @@
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{77A7A873-3804-4E92-BFFF-7DCF9B570166}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SonyCamerRemoteControl.Portable</RootNamespace>
+    <RootNamespace>SonyCameraRemoteControl.Portable</RootNamespace>
     <AssemblyName>SonyCamerRemoteControl.Portable</AssemblyName>
     <TargetFrameworkProfile>Profile78</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -43,6 +43,7 @@
     <Compile Include="..\Shared\AssemblyInfoShared.cs">
       <Link>Properties\AssemblyInfoShared.cs</Link>
     </Compile>
+    <Compile Include="NoResult.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -11,7 +11,7 @@ namespace SonyCameraRemoteControl
     /// <summary>
     /// Base class for all results
     /// </summary>
-    public abstract class ResultBase<T> : ResultBase
+	public abstract class ResultBase<T> : ResultBase
     {
         #region properties    
         [JsonProperty("result")]

@@ -12,7 +12,7 @@ namespace SonyCameraRemoteControl.Tests
 		[Test ()]
         public void SimpleString()
         {
-            string response = "{\"result\": \"Hello Camera Remote API\", \"error\": null, \"id\": 1}";
+            string response = "{\"result\": [\"Hello Camera Remote API\"], \"error\": null, \"id\": 1}";
             StringResult result = StringResult.Parse(response);
 
             Assert.AreEqual("Hello Camera Remote API", result.Value);
@@ -24,7 +24,7 @@ namespace SonyCameraRemoteControl.Tests
 		[Test ()]
         public void SimpleString_2()
         {
-            string response = "{\"result\": \"Hello Camera Remote API\", \"id\": 1}";
+            string response = "{\"result\": [\"Hello Camera Remote API\"], \"id\": 1}";
             StringResult result = StringResult.Parse(response);
 
             Assert.AreEqual("Hello Camera Remote API", result.Value);
@@ -49,7 +49,7 @@ namespace SonyCameraRemoteControl.Tests
         public void Empty()
         {
             string response = "{\"result\": [], \"id\": 1}";
-            StringsResult result = StringsResult.Parse(response);
+            StringResult result = StringResult.Parse(response);
 
             Assert.AreNotEqual(null, result.Value);
             Assert.AreEqual(0, result.Value.Length);
@@ -59,9 +59,21 @@ namespace SonyCameraRemoteControl.Tests
         }
 
 		[Test ()]
+		public void Empty_2()
+		{
+			string response = "{\"result\": [0], \"id\": 1}";
+			NoResult result = NoResult.Parse(response);
+
+			Assert.AreNotEqual(null, result.Value);
+			Assert.AreEqual(null, result.ErrorText);
+			Assert.AreEqual(0, result.ErrorCode);
+			Assert.AreEqual("1", result.Id);
+		}
+
+		[Test ()]
         public void StringArray()
         {
-            string response = "{\"result\": [\"Hello Camera Remote API\"], \"error\": null, \"id\": 1}";
+            string response = "{\"result\": [[\"Hello Camera Remote API\"]], \"error\": null, \"id\": 1}";
             StringsResult result = StringsResult.Parse(response);
 
             Assert.AreEqual(1, result.Value.Length);
@@ -74,7 +86,7 @@ namespace SonyCameraRemoteControl.Tests
 		[Test ()]
         public void StringArray_2()
         {
-            string response = "{\"result\": [\"first\", \"second\"], \"id\": 1}";
+            string response = "{\"result\": [[\"first\", \"second\"]], \"id\": 1}";
             StringsResult result = StringsResult.Parse(response);
 
             Assert.AreEqual(2, result.Value.Length);
