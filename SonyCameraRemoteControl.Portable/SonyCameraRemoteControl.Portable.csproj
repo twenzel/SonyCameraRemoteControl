@@ -44,6 +44,7 @@
       <Link>Properties\AssemblyInfoShared.cs</Link>
     </Compile>
     <Compile Include="NoResult.cs" />
+    <Compile Include="StreamingClient.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
