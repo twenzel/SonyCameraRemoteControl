@@ -358,6 +358,15 @@ namespace SonyCameraRemoteControl
             return await Zoom("in", movement);
         }
 
+		/// <summary>
+		/// This API provides a function to zoom.
+		/// </summary>
+		/// <returns>0 = success</returns>
+		public async Task<StringResult> ZoomInStop()
+		{
+			return await Zoom("in", "stop");
+		}
+
         /// <summary>
         /// This API provides a function to zoom.
         /// </summary>
@@ -377,6 +386,15 @@ namespace SonyCameraRemoteControl
         {
             return await Zoom("out", movement);
         }
+
+		/// <summary>
+		/// This API provides a function to zoom.
+		/// </summary>
+		/// <returns>0 = success</returns>
+		public async Task<StringResult> ZoomOutStop()
+		{
+			return await Zoom("out", "stop");
+		}
 
         /// <summary>
         /// This API provides a function to zoom.
@@ -753,6 +771,14 @@ namespace SonyCameraRemoteControl
         /// Gets or sets the URL used to retrieve the description document for this device/tree. Required.
         /// </summary>
         public Uri Location { get; set; }
+
+		/// <summary>
+		/// Determines whether this is a valid sony device
+		/// </summary>
+		/// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
+		public bool IsValid {
+			get { return !string.IsNullOrEmpty(Manufacturer) && Manufacturer.StartsWith("Sony", StringComparison.OrdinalIgnoreCase) && ModelDescription == "SonyRemoteCamera";}
+		}
         #endregion
     }
 }

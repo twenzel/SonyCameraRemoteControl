@@ -15,6 +15,7 @@ namespace SonyCameraRemoteControl
 		private HttpWebRequest _webRequest;
 
 		public event EventHandler<ImageArgs> ImageRetrieved;
+		public event EventHandler<StreamErrorArgs> Error;
 
 		public StreamingClient ()
 		{
@@ -40,37 +41,45 @@ namespace SonyCameraRemoteControl
 		#region private methods
 		private void consumeStream(string url)
 		{
-			_webRequest = HttpWebRequest.CreateHttp (url);  
-			_webRequest.Method = "GET";
-			var response = _webRequest.GetResponseAsync().Result as HttpWebResponse;
-			var stream = response.GetResponseStream ();
+			try
+			{
+				_webRequest = HttpWebRequest.CreateHttp (url);  
+				_webRequest.Method = "GET";
+				var response = _webRequest.GetResponseAsync().Result as HttpWebResponse;
+				var stream = response.GetResponseStream ();
 
-			var reader = new BinaryReader (stream);
-			//var buffer = new char[8];
-			//var count = reader.ReadBlock (buffer, 0, 8);
-			var buffer = reader.ReadBytes(8);
+				var reader = new BinaryReader (stream);
 
-			while (buffer.Length > 0) {
-				// the first 8 byte contains
-				// startbyte (1)
-				// payloedType (1)
-				// sequenceNumber (2)
-				// timeStamp (4)
+				var buffer = reader.ReadBytes(8);
 
-				if (isActive ()) {
-					// we're only using the payloadType
-					var payloadType = buffer [1];
+				while (buffer.Length > 0) {
+					// the first 8 byte contains
+					// startbyte (1)
+					// payloedType (1)
+					// sequenceNumber (2)
+					// timeStamp (4)
 
-					// read for JPEG image
-					if (readPayload ((payloadType & 0x01) == 0x01, reader))
-						buffer = reader.ReadBytes (8);
-					else
+					if (isActive ()) {
+						// we're only using the payloadType
+						var payloadType = buffer [1];
+
+						// read for JPEG image
+						if (readPayload ((payloadType & 0x01) == 0x01, reader))
+							buffer = reader.ReadBytes (8);
+						else
+							break;
+					} else
 						break;
-				} else
-					break;
+				}
+				// stream.Close();
+
+
+			} catch(Exception ex) {
+				if (Error != null)
+					Error (this, new StreamErrorArgs () { ErrorMessage = ex.Message});
+			} finally {
+				Stop ();
 			}
-				
-			//stream.Close ();
 		}
 
 		/// <summary>
@@ -86,50 +95,38 @@ namespace SonyCameraRemoteControl
 			if (detectPayloadHeader(reader))
 			{
 				// get JPEG data size
-				//char[] jData = new char[3];
-				//count = reader.ReadBlock (jData, 0, 3);
 				var jData = reader.ReadBytes(3);
 				if (jData.Length > 0)
 				{
 					jpegDataSize = bytesToInt (jData);
 
 					// get JPEG padding size
-					//char[] jPad = new char[1];
-					//count = reader.ReadBlock (jPad, 0, 1);
 					var jPad = reader.ReadBytes(1);
 					if (jPad.Length > 0)
 					{
 						jpegPaddingSize = bytesToInt(jPad);
 
 						// remove 120 bytes from stream
-						//char[] b1 = new char[120];
-						//count = reader.ReadBlock (b1, 0, 120);
 						var b1 = reader.ReadBytes(120);
 
 						if (b1.Length > 0)
 						{
 							// read JPEG image
-							//byte[] jpegData =new byte[jpegDataSize];
-							//count = reader.ReadBlock (jpegData, 0, jpegDataSize);
 							var jpegData = reader.ReadBytes(jpegDataSize);
 
 							if (jpegData.Length > 0)
 							{
 								if (isImage) {
-//									NSData *imageData =
-//										[[NSData alloc] initWithBytes:jpegData length:jpegDataSize];
-//									UIImage *tempImage = [UIImage imageWithData:imageData];
-//									dispatch_async(dispatch_get_main_queue(),
-//										^{ [_viewDelegate didFetchImage:tempImage]; });
 
 									if (ImageRetrieved != null)
 										ImageRetrieved(this, new ImageArgs() {JpegData = jpegData});
 								}
 
 								// remove JPEG padding data
-								//char[] padData = new char[jpegPaddingSize];
-								//return reader.ReadBlock(padData, 0, jpegPaddingSize);
-								return reader.ReadBytes(jpegPaddingSize).Length > 0;
+								if (jpegPaddingSize > 0)
+									return reader.ReadBytes (jpegPaddingSize).Length > 0;
+								else
+									return true;
 							}
 						}
 					}
@@ -194,4 +191,9 @@ namespace SonyCameraRemoteControl
 public class ImageArgs : EventArgs
 {
 	public byte[] JpegData { get; set;}
+}
+
+public class StreamErrorArgs : EventArgs
+{
+	public string ErrorMessage { get; set;}
 }

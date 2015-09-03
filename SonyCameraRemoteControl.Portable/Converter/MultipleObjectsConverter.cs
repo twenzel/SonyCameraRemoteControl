@@ -5,10 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SonyCameraRemoteControl;
-using SonyCameraRemoteControl.Converter;
 
-namespace SonyCamerRemoteControl.Portable.Converter
+namespace SonyCameraRemoteControl.Converter
 {    
     /// <summary>
     /// JSON converter for multi level objects

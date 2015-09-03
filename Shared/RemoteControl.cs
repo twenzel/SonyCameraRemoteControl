@@ -22,7 +22,7 @@ namespace SonyCameraRemoteControl
 		{
 			using (var deviceLocator = new SsdpDeviceLocator())
 			{
-				var results = await deviceLocator.SearchAsync("uuid:" + uuid).ConfigureAwait(false);
+				var results = await deviceLocator.SearchAsync("uuid:" + uuid);
 
 				if (results.Any())
 				{
@@ -91,5 +91,39 @@ namespace SonyCameraRemoteControl
 			return result;
 		}
 
+		/// <summary>
+		/// Searches for first sony camera (max.)
+		/// </summary>
+		/// <param name="timoutMilliseconds">Amount of milliseconds to wait for results.</param>
+		/// <returns></returns>
+		public static async Task<SonyCameraDevice> SearchDeviceAsync(int timoutMilliseconds = 5000)
+		{
+			var _BroadcastListener = new SsdpDeviceLocator();
+			SonyCameraDevice result = null;
+
+			AutoResetEvent signal = new AutoResetEvent(false);
+			EventHandler<DeviceAvailableEventArgs> handler = null;
+
+			handler = async (s, e) =>
+			{
+				if (e.IsNewlyDiscovered)
+				{
+					result = await SonyCameraDevice.GetSonyDevice(e.DiscoveredDevice);                    
+					signal.Set();
+
+				}
+			};
+			_BroadcastListener.DeviceAvailable += handler;
+
+			await Task.Run( ()=> {                
+				_BroadcastListener.StartListeningForNotifications();
+				signal.WaitOne(timoutMilliseconds);
+			});
+
+			_BroadcastListener.StopListeningForNotifications();
+			_BroadcastListener.DeviceAvailable -= handler;
+
+			return result;
+		}
 	}
 }
