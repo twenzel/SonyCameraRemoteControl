@@ -46,9 +46,21 @@ namespace SonyCameraRemoteControl.Tests
         }
 
 		[Test ()]
+		public void ErrorResponse_2()
+		{
+			string response = "{\"error\":[12,\"getEvent\"],\"id\":2}";
+			ValuesResult result = ValuesResult.Parse(response);
+
+			Assert.AreEqual(null, result.Value);
+			Assert.AreEqual("getEvent", result.ErrorText);
+			Assert.AreEqual(12, result.ErrorCode);
+			Assert.AreEqual("2", result.Id);
+		}
+
+		[Test ()]
         public void Empty()
         {
-            string response = "{\"result\": [], \"id\": 1}";
+            string response = "{\"result\": [\"\"], \"id\": 1}";
             StringResult result = StringResult.Parse(response);
 
             Assert.AreNotEqual(null, result.Value);
@@ -74,7 +86,7 @@ namespace SonyCameraRemoteControl.Tests
         public void StringArray()
         {
             string response = "{\"result\": [[\"Hello Camera Remote API\"]], \"error\": null, \"id\": 1}";
-            StringsResult result = StringsResult.Parse(response);
+			StringObjectsResult result = StringObjectsResult.Parse(response);
 
             Assert.AreEqual(1, result.Value.Length);
             Assert.AreEqual("Hello Camera Remote API", result.Value[0]);
@@ -87,7 +99,7 @@ namespace SonyCameraRemoteControl.Tests
         public void StringArray_2()
         {
             string response = "{\"result\": [[\"first\", \"second\"]], \"id\": 1}";
-            StringsResult result = StringsResult.Parse(response);
+			StringObjectsResult result = StringObjectsResult.Parse(response);
 
             Assert.AreEqual(2, result.Value.Length);
             Assert.AreEqual("first", result.Value[0]);
@@ -96,6 +108,20 @@ namespace SonyCameraRemoteControl.Tests
             Assert.AreEqual(0, result.ErrorCode);
             Assert.AreEqual("1", result.Id);
         }
+
+		[Test ()]
+		public void StringArray_3()
+		{
+			string response = "{\"id\":3,\"result\":[\"Smart Remote Control\",\"1.0.0\"]}";
+			StringsResult result = StringsResult.Parse(response);
+
+			Assert.AreEqual(2, result.Value.Length);
+			Assert.AreEqual("Smart Remote Control", result.Value[0]);
+			Assert.AreEqual("1.0.0", result.Value[1]);
+			Assert.AreEqual(null, result.ErrorText);
+			Assert.AreEqual(0, result.ErrorCode);
+			Assert.AreEqual("3", result.Id);
+		}
 
 		[Test ()]
         public void Dictionary()

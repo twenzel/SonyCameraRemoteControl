@@ -46,7 +46,9 @@ namespace SonyCameraRemoteControl.Converter
 			{
 				List<TValue> results = new List<TValue> ();
 
-				serializer.Populate(jsonObject["result"].CreateReader(), results);
+				var jsonResult = jsonObject ["result"];
+
+				serializer.Populate(jsonResult.CreateReader(), results);
 
 				if (results.Count > 0)
 					valueObject.Value = results[0];

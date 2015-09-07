@@ -17,6 +17,12 @@ Search for a device:
 SonyCameryDevice device = RemoteControl.SearchDevice();
 ```
 
+Initialize the device (retrieving API version and available methods) [Optional]
+```csharp
+var initResult = await _device.Initialize();
+```
+
+
 using various AOI methods:
 ```csharp
 var result = await _device.StartLiveView();
@@ -24,6 +30,25 @@ var result = await _device.StartLiveView();
 var result = await _device.TakePhoto();
 ```
 
+Retrieving the live preview stream:
+```csharp
+_streamingClient = new StreamingClient ();
+_streamingClient.ImageRetrieved += (s, args) => showImageData (args.JpegData);
+_streamingClient.Error += (sender, e) => showError("Streaming error - " + e.ErrorMessage);
+
+// start and show live preview
+var result = await _device.StartLiveView ();
+if (!result.HasError)
+_streamingClient.Start (result.Value);
+
+
+// stop preview
+if (_streamingClient != null) {
+	_streamingClient.Stop ();
+
+	Result =  _device.StopLiveView ();
+} 
+```
 
 
 More information about Sony Camera Remote API:

@@ -22,6 +22,8 @@ namespace SonyCameraRemoteControl
         private static HttpClient s_DefaultHttpClient;
 		private static int _id;
 
+		private string _version = "1.0";
+		private List<string> _availableMethods;
         private string _Udn;
 
         /// <summary>
@@ -73,6 +75,29 @@ namespace SonyCameraRemoteControl
 			return result;
 		}
 
+		/// <summary>
+		/// Retrieves the server (API) version and the available methods.
+		/// </summary>
+		public async Task<ResultBase> Initialize()
+		{
+			var versionInfo = await GetVersions ();
+
+			if (!versionInfo.HasError && versionInfo.Value.Length > 0)
+				_version = versionInfo.Value [0];
+			else
+				return versionInfo;
+
+			// get all available methods
+			var apiResult = await GetAvailableAPIList();
+
+			if (!apiResult.HasError)
+				_availableMethods = new List<string> (apiResult.Value);
+			else
+				return apiResult;
+
+			return new NoResult ();
+		}
+
         /// <summary>
         /// Sends a little hello
         /// </summary>
@@ -88,13 +113,13 @@ namespace SonyCameraRemoteControl
         /// Gets a list of available apis
         /// </summary>
         /// <returns></returns>
-        public async Task<StringsResult> GetAvailableAPIList()
+        public async Task<StringObjectsResult> GetAvailableAPIList()
         {
             CheckCameraEndpoint();
 
 			var result = await SendRequestAsync(GetCameraEndpoint(), "getAvailableApiList");
 
-            return StringsResult.Parse(result);
+			return StringObjectsResult.Parse(result);
         }
 
         /// <summary>
@@ -109,6 +134,19 @@ namespace SonyCameraRemoteControl
 
             return StringsResult.Parse(result);
         }
+
+		/// <summary>
+		/// The client can get list of versions, which the server supports, using this API.
+		/// </summary>
+		/// <returns></returns>
+		public async Task<StringObjectsResult> GetVersions()
+		{
+			CheckCameraEndpoint();
+
+			var result = await SendRequestAsync(GetCameraEndpoint(), "getVersions");
+
+			return StringObjectsResult.Parse(result);
+		}
 
         /// <summary>
         /// Gets current camera shooting mode
@@ -128,13 +166,13 @@ namespace SonyCameraRemoteControl
         /// The client should use "getAvailableShootMode" to get the available parameters at the moment.
         /// </summary>
         /// <returns>A list of supported shoot modes</returns>
-        public async Task<StringsResult> GetSupportedShootMode()
+		public async Task<StringObjectsResult> GetSupportedShootMode()
         {
             CheckCameraEndpoint();
 
 			var result = await SendRequestAsync(GetCameraEndpoint(), "getSupportedShootMode");
 
-            return StringsResult.Parse(result);
+			return StringObjectsResult.Parse(result);
         }
 
         /// <summary>
@@ -250,13 +288,13 @@ namespace SonyCameraRemoteControl
         /// The client should use "getAvailableLiveviewSize" to get the available parameters at the moment.
         /// </summary>
         /// <returns>A list of supported liveview sizes</returns>
-        public async Task<StringsResult> GetSupportedLiveviewSize()
+		public async Task<StringObjectsResult> GetSupportedLiveviewSize()
         {
             CheckCameraEndpoint();
 
 			var result = await SendRequestAsync(GetCameraEndpoint(), "getSupportedLiveviewSize");
 
-            return StringsResult.Parse(result);
+			return StringObjectsResult.Parse(result);
         }
 
         /// <summary>
@@ -308,13 +346,13 @@ namespace SonyCameraRemoteControl
         /// The postview is captured image data by camera. The postview
         /// image can be used for storing it as the taken picture, and
         /// showing it to the client display.</returns>
-		public async Task<StringsResult> TakePicture()
+		public async Task<StringObjectsResult> TakePicture()
         {
             CheckCameraEndpoint();
 
 			var result = await SendRequestAsync(GetCameraEndpoint(), "actTakePicture");
 
-			return StringsResult.Parse(result);
+			return StringObjectsResult.Parse(result);
         }
 
         /// <summary>
@@ -324,13 +362,13 @@ namespace SonyCameraRemoteControl
         /// The postview is captured image data by camera. The postview
         /// image can be used for storing it as the taken picture, and
         /// showing it to the client display.</returns>
-        public async Task<StringsResult> AwaitTakePicture()
+		public async Task<StringObjectsResult> AwaitTakePicture()
         {
             CheckCameraEndpoint();
 
 			var result = await SendRequestAsync(GetCameraEndpoint(), "awaitTakePicture");
 
-            return StringsResult.Parse(result);
+			return StringObjectsResult.Parse(result);
         }
 
         /// <summary>
@@ -440,7 +478,7 @@ namespace SonyCameraRemoteControl
         /// <param name="url">The service url</param>
         /// <param name="method">The api method</param>
         /// <returns></returns>
-        public async static Task<string> SendRequestAsync(string url, string method)
+		public async Task<string> SendRequestAsync(string url, string method)
         {
             return await SendRequestAsync(url, method, new string[] { });
         }
@@ -452,7 +490,7 @@ namespace SonyCameraRemoteControl
         /// <param name="method">The api method</param>
         /// <param name="parameter">a single parameter</param>
         /// <returns></returns>
-        public async static Task<string> SendRequestAsync(string url, string method, string parameter)
+		public async Task<string> SendRequestAsync(string url, string method, string parameter)
         {
             return await SendRequestAsync(url, method, new string[]{parameter});
         }
@@ -464,9 +502,24 @@ namespace SonyCameraRemoteControl
         /// <param name="method">The api method</param>
         /// <param name="parameters">The method parameters</param>
         /// <returns></returns>
-        public async static Task<string> SendRequestAsync(string url, string method, string[] parameters)
-        {
-            var responseMessage = await GetDefaultClient().PostAsync(url, CreateContent(method, parameters));
+		public async Task<string> SendRequestAsync(string url, string method, string[] parameters)
+		{
+			CheckAvailableMethod (method);
+
+			return await SendRequestAsync (url, method, parameters, _version);
+		}
+
+		/// <summary>
+		/// Sends a request with parameters
+		/// </summary>
+		/// <param name="url">The service url</param>
+		/// <param name="method">The api method</param>
+		/// <param name="parameters">The method parameters</param>
+		/// <param name="version">The API version</param>
+		/// <returns></returns>
+		public async static Task<string> SendRequestAsync(string url, string method, string[] parameters, string version="1.0")
+		{
+            var responseMessage = await GetDefaultClient().PostAsync(url, CreateContent(method, parameters, version));
             responseMessage.EnsureSuccessStatusCode();
 
             // Not using ReadAsStringAsync() here as some devices return the content type as utf-8 not UTF-8,
@@ -481,8 +534,9 @@ namespace SonyCameraRemoteControl
         /// <param name="url">The service url</param>
         /// <param name="method">The api method</param>
         /// <param name="info">The method parameters</param>
+		/// <param name="version">The API version</param>
         /// <returns></returns>
-        public async static Task<string> SendRequestAsync(string url, string method, KeyValuePair<string, object> info)
+		public async Task<string> SendRequestAsync(string url, string method, KeyValuePair<string, object> info)
         {
             return await SendRequestAsync(url, method, new KeyValuePair<string, object>[] { info });
         }
@@ -494,16 +548,31 @@ namespace SonyCameraRemoteControl
         /// <param name="method">The api method</param>
         /// <param name="infos">The method parameters</param>
         /// <returns></returns>
-        public async static Task<string> SendRequestAsync(string url, string method, IEnumerable<KeyValuePair<string, object>> infos)
-        {
-            var responseMessage = await GetDefaultClient().PostAsync(url, CreateContent(method, infos));
-            responseMessage.EnsureSuccessStatusCode();
+		public async Task<string> SendRequestAsync(string url, string method, IEnumerable<KeyValuePair<string, object>> infos)
+		{
+			CheckAvailableMethod (method);
 
-            // Not using ReadAsStringAsync() here as some devices return the content type as utf-8 not UTF-8,
-            // which causes an (unneccesary) exception.
-            var data = await responseMessage.Content.ReadAsByteArrayAsync();
-            return System.Text.UTF8Encoding.UTF8.GetString(data, 0, data.Length);
-        }
+			return await SendRequestAsync (url, method, infos, _version);
+		}
+
+		/// <summary>
+		/// Sends a request with parameters
+		/// </summary>
+		/// <param name="url">The service url</param>
+		/// <param name="method">The api method</param>
+		/// <param name="infos">The method parameters</param>
+		/// <param name="version">The API version</param>
+		/// <returns></returns>
+		public async static Task<string> SendRequestAsync(string url, string method, IEnumerable<KeyValuePair<string, object>> infos, string version="1.0")
+		{
+			var responseMessage = await GetDefaultClient ().PostAsync (url, CreateContent (method, infos, version));
+			responseMessage.EnsureSuccessStatusCode ();
+
+			// Not using ReadAsStringAsync() here as some devices return the content type as utf-8 not UTF-8,
+			// which causes an (unneccesary) exception.
+			var data = await responseMessage.Content.ReadAsByteArrayAsync ();
+			return System.Text.UTF8Encoding.UTF8.GetString (data, 0, data.Length);
+		}
 
         /// <summary>
         /// Determines whether a camera endpoint exists on the device
@@ -513,6 +582,16 @@ namespace SonyCameraRemoteControl
         {
             return Endpoints.ContainsKey("camera");
         }
+
+		/// <summary>
+		/// Determines whether the API method available. This method can only return valuable results if Initialize has been called once.
+		/// </summary>
+		/// <returns><c>true</c> ifthe method available; otherwise, <c>false</c>.</returns>
+		/// <param name="method">API method name</param>
+		public bool IsMethodAvailable(string method)
+		{
+			return _availableMethods == null || _availableMethods.Contains (method);
+		}
         #endregion
 
         #region Private Methods
@@ -598,6 +677,12 @@ namespace SonyCameraRemoteControl
             if (!HasCameraEndpoint())
                 throw new InvalidOperationException("No 'camera' endpoint found.");
         }
+
+		private void CheckAvailableMethod (string method)
+		{
+			if (!IsMethodAvailable (method))
+				throw new InvalidOperationException (String.Format ("API method '{0}' is not available/supported on the remote device.", method));
+		}
 
         private static HttpClient GetDefaultClient()
         {

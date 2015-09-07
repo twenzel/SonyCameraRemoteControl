@@ -24,7 +24,7 @@ namespace SonyCameraRemoteControl.Converter
             
             ResultBase<TValue> valueObject = result as ResultBase<TValue>;
 
-            if (valueObject != null)
+			if (valueObject != null && jsonObject["result"] != null)
             {
                 TValue value = new TValue();
 

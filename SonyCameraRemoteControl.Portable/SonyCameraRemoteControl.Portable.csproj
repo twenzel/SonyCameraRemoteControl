@@ -45,6 +45,8 @@
     </Compile>
     <Compile Include="NoResult.cs" />
     <Compile Include="StreamingClient.cs" />
+    <Compile Include="Converter\StringArrayConverter.cs" />
+    <Compile Include="StringObjectsResult.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

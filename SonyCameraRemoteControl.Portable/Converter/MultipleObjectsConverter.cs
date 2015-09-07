@@ -21,7 +21,7 @@ namespace SonyCameraRemoteControl.Converter
 
             ValuesResult valueObject = result as ValuesResult;
 
-            if (valueObject != null)
+			if (valueObject != null && jsonObject["result"] != null)
             {                
                 JsonReader reader = jsonObject["result"].CreateReader();
 
