@@ -69,10 +69,19 @@ namespace SonyCameraRemoteControl
 		{
 			var result = Endpoints ["camera"];
 
-			if (!String.IsNullOrEmpty (FriendlyName) && FriendlyName.StartsWith ("DSC"))
+			if (IsDSCModel())
 				result = result.Replace ("/sony/", "/");
 
 			return result;
+		}
+
+		/// <summary>
+		/// Determines whether this devie is a "DSC-" model.
+		/// </summary>
+		/// <returns><c>true</c> if this instance is DSC model; otherwise, <c>false</c>.</returns>
+		public bool IsDSCModel()
+		{
+			return !String.IsNullOrEmpty (FriendlyName) && FriendlyName.StartsWith ("DSC");
 		}
 
 		/// <summary>
@@ -381,7 +390,7 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-			var result = await SendRequestAsync(GetCameraEndpoint(), "actZoom", new string[]{direction, movement});
+			var result = await SendRequestAsync(GetCameraEndpoint(), "actZoom", new object[]{direction, movement});
 
             return StringResult.Parse(result);
         }
@@ -453,7 +462,12 @@ namespace SonyCameraRemoteControl
         {
             CheckCameraEndpoint();
 
-			var result = await SendRequestAsync(GetCameraEndpoint(), "getEvent", longPolling.ToString());
+			string result;
+
+			if (IsDSCModel())
+				result = await SendRequestAsync(GetCameraEndpoint(), "receiveEvent", longPolling);
+			else
+				result = await SendRequestAsync(GetCameraEndpoint(), "getEvent", longPolling);
 
             return ValuesResult.Parse(result);
         }
@@ -478,9 +492,9 @@ namespace SonyCameraRemoteControl
         /// <param name="url">The service url</param>
         /// <param name="method">The api method</param>
         /// <returns></returns>
-		public async Task<string> SendRequestAsync(string url, string method)
+		public Task<string> SendRequestAsync(string url, string method)
         {
-            return await SendRequestAsync(url, method, new string[] { });
+			return SendRequestAsync(url, method, new object[] { });
         }
 
         /// <summary>
@@ -490,9 +504,9 @@ namespace SonyCameraRemoteControl
         /// <param name="method">The api method</param>
         /// <param name="parameter">a single parameter</param>
         /// <returns></returns>
-		public async Task<string> SendRequestAsync(string url, string method, string parameter)
+		public Task<string> SendRequestAsync(string url, string method, object parameter)
         {
-            return await SendRequestAsync(url, method, new string[]{parameter});
+			return SendRequestAsync(url, method, new object[]{parameter});
         }
 
         /// <summary>
@@ -502,11 +516,11 @@ namespace SonyCameraRemoteControl
         /// <param name="method">The api method</param>
         /// <param name="parameters">The method parameters</param>
         /// <returns></returns>
-		public async Task<string> SendRequestAsync(string url, string method, string[] parameters)
+		public Task<string> SendRequestAsync(string url, string method, object[] parameters)
 		{
 			CheckAvailableMethod (method);
 
-			return await SendRequestAsync (url, method, parameters, _version);
+			return SendRequestAsync (url, method, parameters, _version);
 		}
 
 		/// <summary>
@@ -517,18 +531,34 @@ namespace SonyCameraRemoteControl
 		/// <param name="parameters">The method parameters</param>
 		/// <param name="version">The API version</param>
 		/// <returns></returns>
-		public async static Task<string> SendRequestAsync(string url, string method, string[] parameters, string version="1.0")
+		public static Task<string> SendRequestAsync(string url, string method, object[] parameters, string version="1.0")
 		{
-            var responseMessage = await GetDefaultClient().PostAsync(url, CreateContent(method, parameters, version));
-            responseMessage.EnsureSuccessStatusCode();
-
-            // Not using ReadAsStringAsync() here as some devices return the content type as utf-8 not UTF-8,
-            // which causes an (unneccesary) exception.
-            var data = await responseMessage.Content.ReadAsByteArrayAsync();
-            return System.Text.UTF8Encoding.UTF8.GetString(data, 0, data.Length);
+			return SendRequestAsync (url, CreateContent (method, parameters, version));
         }
 
-         /// <summary>
+		/// <summary>
+		/// Sends a request
+		/// </summary>
+		/// <param name="url">The service url</param>
+		/// <param name="content">The request content</param>
+		/// <returns></returns>
+		public async static Task<string> SendRequestAsync(string url, StringContent content)
+		{
+			try
+			{
+				var responseMessage = await GetDefaultClient().PostAsync(url, content);
+				responseMessage.EnsureSuccessStatusCode();
+
+				// Not using ReadAsStringAsync() here as some devices return the content type as utf-8 not UTF-8,
+				// which causes an (unneccesary) exception.
+				var data = await responseMessage.Content.ReadAsByteArrayAsync();
+				return System.Text.UTF8Encoding.UTF8.GetString(data, 0, data.Length);
+			} catch (Exception ex) {
+				return string.Format ("{{\"error\": [999,\"{0}\"],\"id\": 1}}", ex.Message);
+			}
+		}
+
+        /// <summary>
         /// Sends a request with parameters
         /// </summary>
         /// <param name="url">The service url</param>
@@ -538,7 +568,7 @@ namespace SonyCameraRemoteControl
         /// <returns></returns>
 		public async Task<string> SendRequestAsync(string url, string method, KeyValuePair<string, object> info)
         {
-            return await SendRequestAsync(url, method, new KeyValuePair<string, object>[] { info });
+			return await SendRequestAsync(url, method, new KeyValuePair<string, object>[] { info });
         }
 
         /// <summary>
@@ -565,13 +595,7 @@ namespace SonyCameraRemoteControl
 		/// <returns></returns>
 		public async static Task<string> SendRequestAsync(string url, string method, IEnumerable<KeyValuePair<string, object>> infos, string version="1.0")
 		{
-			var responseMessage = await GetDefaultClient ().PostAsync (url, CreateContent (method, infos, version));
-			responseMessage.EnsureSuccessStatusCode ();
-
-			// Not using ReadAsStringAsync() here as some devices return the content type as utf-8 not UTF-8,
-			// which causes an (unneccesary) exception.
-			var data = await responseMessage.Content.ReadAsByteArrayAsync ();
-			return System.Text.UTF8Encoding.UTF8.GetString (data, 0, data.Length);
+			return await SendRequestAsync (url, CreateContent (method, infos, version));
 		}
 
         /// <summary>
@@ -708,7 +732,7 @@ namespace SonyCameraRemoteControl
             return s_DefaultHttpClient;
         }        
 
-        private static StringContent CreateContent(string method, string[] parameters, string version="1.0")
+        private static StringContent CreateContent(string method, object[] parameters, string version="1.0")
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("{");
@@ -721,7 +745,7 @@ namespace SonyCameraRemoteControl
 		        if (parameterValues.Length > 0)
                     parameterValues += ",";
 
-                parameterValues += string.Format("\"{0}\"", value);
+				parameterValues += FormatRequestParameter (value); 
 	        }                
 
             sb.AppendLine(string.Format("\"params\": [{0}],", parameterValues));
@@ -745,7 +769,7 @@ namespace SonyCameraRemoteControl
                 if (parameterValues.Length > 0)
                     parameterValues += ",";
 
-                parameterValues += string.Format("\"{0}\": {1}", item.Key, item.Value);
+				parameterValues += string.Format("\"{0}\": {1}", item.Key, FormatRequestParameter(item.Value));
             }
 
             sb.AppendLine(string.Format("\"params\": [{{{0}}}],", parameterValues));
@@ -756,6 +780,21 @@ namespace SonyCameraRemoteControl
 
 			return content;
         }
+
+		private static string FormatRequestParameter(object parameter)
+		{
+			if (parameter != null) {
+				var paramType = parameter.GetType ();
+
+				if (paramType == typeof(bool))
+					return ((bool)parameter) ? "true" : "false";
+				else if (paramType == typeof(string))
+					return string.Format("\"{0}\"", parameter);
+				else
+					return parameter.ToString ();
+			} else
+				return string.Empty;
+		}
 
 		/// <summary>
 		/// Gets the identifier.
